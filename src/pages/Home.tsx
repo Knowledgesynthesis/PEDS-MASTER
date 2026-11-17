@@ -1,151 +1,138 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
-import {
-  Baby,
-  Heart,
-  Wind,
-  Ear,
-  TrendingDown,
-  Activity,
-  Droplet,
-  Brain,
-  FileText,
-  ClipboardCheck,
-  AlertCircle
-} from 'lucide-react';
+import { ArrowRight, BookOpen, Brain, ClipboardCheck, FileText, Repeat, Sparkles, Wrench } from 'lucide-react';
+import { MODULES, ALL_QUESTIONS } from '@/content';
+import { CASES } from '@/content/cases';
+import { useMastery } from '@/lib/useMastery';
+import { useProgressStore } from '@/store/useProgressStore';
+import { moduleColor } from '@/lib/theme';
+import { ProgressBar } from '@/components/ui/Inputs';
+import { buttonClass } from '@/components/ui/buttonClass';
+import { RichText } from '@/components/content/RichText';
+import { cn } from '@/lib/utils';
 
-const Home: React.FC = () => {
-  const modules = [
-    {
-      path: '/neonatal-sepsis',
-      icon: Baby,
-      title: 'Neonatal Sepsis',
-      description: 'Early vs late onset sepsis, risk factors, and evaluation',
-      color: 'text-red-500'
-    },
-    {
-      path: '/chd',
-      icon: Heart,
-      title: 'Congenital Heart Disease',
-      description: 'ASD, VSD, PDA - murmurs and physiology',
-      color: 'text-pink-500'
-    },
-    {
-      path: '/bronchiolitis',
-      icon: Wind,
-      title: 'Bronchiolitis (RSV)',
-      description: 'Viral pathophysiology and supportive management',
-      color: 'text-blue-500'
-    },
-    {
-      path: '/croup',
-      icon: AlertCircle,
-      title: 'Airway Emergencies',
-      description: 'Croup vs epiglottitis differentiation',
-      color: 'text-orange-500'
-    },
-    {
-      path: '/ent',
-      icon: Ear,
-      title: 'ENT & Throat Infections',
-      description: 'Otitis media, strep pharyngitis, and complications',
-      color: 'text-purple-500'
-    },
-    {
-      path: '/ftt',
-      icon: TrendingDown,
-      title: 'Failure to Thrive',
-      description: 'Growth patterns and differential diagnosis',
-      color: 'text-yellow-600'
-    },
-    {
-      path: '/asthma',
-      icon: Activity,
-      title: 'Childhood Asthma',
-      description: 'Classification and step-up/down therapy',
-      color: 'text-green-500'
-    },
-    {
-      path: '/fluids',
-      icon: Droplet,
-      title: 'Pediatric Fluids',
-      description: 'Dehydration assessment and fluid management',
-      color: 'text-cyan-500'
-    },
-    {
-      path: '/development',
-      icon: Brain,
-      title: 'Developmental Delay',
-      description: 'Milestones and red flags by domain',
-      color: 'text-indigo-500'
-    },
-    {
-      path: '/cases',
-      icon: FileText,
-      title: 'Clinical Cases',
-      description: 'Interactive pediatric case scenarios',
-      color: 'text-teal-500'
-    },
-    {
-      path: '/assessment',
-      icon: ClipboardCheck,
-      title: 'Assessment',
-      description: 'Test your knowledge with MCQs and vignettes',
-      color: 'text-violet-500'
-    },
-  ];
+const TOOL_COUNT = new Set(MODULES.flatMap((m) => m.sections.flatMap((s) => s.blocks.flatMap((b) => (b.type === 'tool' ? [b.id] : []))))).size;
+
+const RECENT = MODULES.flatMap((m) => m.updates.filter((u) => Number(u.year) >= 2025).map((u) => ({ ...u, module: m }))).sort((a, b) => Number(b.year) - Number(a.year));
+
+export default function Home() {
+  const { byModule, total, mastered, answered, due } = useMastery();
+  const visited = useProgressStore((s) => s.visited);
+  const lastSlug = Object.entries(visited).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const last = MODULES.find((m) => m.slug === lastSlug);
+  const nextUp = MODULES.find((m) => byModule[m.slug].mastered < byModule[m.slug].total * 0.8) ?? MODULES[0];
+  const resume = last ?? nextUp;
+  const cardsTotal = MODULES.reduce((a, m) => a + m.flashcards.length, 0);
 
   return (
-    <div className="space-y-8">
-      {/* Hero Section */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-          Welcome to PEDS MASTER
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          A comprehensive pediatric educational platform covering high-yield ambulatory and emergency conditions
+    <div className="space-y-10">
+      <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/15 via-card to-card p-6 sm:p-10">
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">Pediatrics, evidence first</p>
+        <h1 className="mt-2 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">Learn it, test it, apply it — until it sticks.</h1>
+        <p className="mt-3 max-w-2xl text-muted-foreground">
+          {MODULES.length} modules built on current AAP, NAEPP/GINA, IDSA, AHA, CDC and NICE guidance, with {TOOL_COUNT} interactive tools, {ALL_QUESTIONS.length} questions,{' '}
+          {cardsTotal} flashcards and {CASES.length} branching cases. Every recommendation links to its source.
         </p>
-      </div>
-
-      {/* Modules Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {modules.map((module) => {
-          const Icon = module.icon;
-          return (
-            <Link key={module.path} to={module.path}>
-              <Card className="h-full transition-all hover:shadow-lg hover:scale-105 cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-start space-x-4">
-                    <div className={`${module.color} p-2 bg-secondary rounded-lg`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <CardTitle className="text-lg">{module.title}</CardTitle>
-                      <CardDescription>{module.description}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link to={`/${resume.slug}`} className={buttonClass('default', 'lg')}>
+            {last ? `Continue: ${last.short}` : 'Start with Module 0'} <ArrowRight className="h-4 w-4" />
+          </Link>
+          {due > 0 ? (
+            <Link to="/assessment?source=due" className={buttonClass('outline', 'lg')}>
+              <Repeat className="h-4 w-4" /> Review {due} due
             </Link>
-          );
-        })}
-      </div>
+          ) : (
+            <Link to="/assessment" className={buttonClass('outline', 'lg')}>
+              <ClipboardCheck className="h-4 w-4" /> Build an exam
+            </Link>
+          )}
+        </div>
+        {answered > 0 && (
+          <div className="mt-6 max-w-md space-y-1">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Overall mastery</span>
+              <span>
+                {mastered}/{total} questions
+              </span>
+            </div>
+            <ProgressBar value={mastered / total} />
+          </div>
+        )}
+      </section>
 
-      {/* Quick Info */}
-      <Card className="bg-muted/50">
-        <CardHeader>
-          <CardTitle className="text-lg">Educational Platform</CardTitle>
-          <CardDescription className="space-y-2">
-            <p>This platform is designed for medical students, residents, and healthcare professionals to learn pediatric diagnosis and management.</p>
-            <p className="font-semibold text-destructive">
-              For educational purposes only. Not intended for clinical decision-making.
-            </p>
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <section aria-labelledby="method" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 id="method" className="sr-only">
+          How to use
+        </h2>
+        {[
+          { icon: BookOpen, title: '1 · Learn', text: 'Bottom line first, then the evidence. Tables over prose.' },
+          { icon: Wrench, title: '2 · Use the tools', text: 'Scores, pathways and calculators embedded where you need them.' },
+          { icon: Brain, title: '3 · Retrieve', text: 'Questions and flashcards with spaced review of what you miss.' },
+          { icon: FileText, title: '4 · Apply', text: 'Multi-step cases where each decision changes what happens next.' },
+        ].map((s) => (
+          <div key={s.title} className="rounded-xl border bg-card p-4">
+            <s.icon className="h-5 w-5 text-primary" />
+            <p className="mt-2 font-semibold">{s.title}</p>
+            <p className="text-sm text-muted-foreground">{s.text}</p>
+          </div>
+        ))}
+      </section>
+
+      <section aria-labelledby="path" className="space-y-4">
+        <div className="flex items-end justify-between">
+          <h2 id="path" className="text-xl font-bold tracking-tight">
+            Learning path
+          </h2>
+          <span className="text-xs text-muted-foreground">Foundations first; others in any order</span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {MODULES.map((m, i) => {
+            const s = byModule[m.slug];
+            const Icon = m.icon;
+            const c = moduleColor[m.color];
+            return (
+              <Link key={m.slug} to={`/${m.slug}`} className="group flex flex-col rounded-xl border bg-card p-4 transition-shadow hover:shadow-md">
+                <div className="flex items-start gap-3">
+                  <div className={cn('flex h-10 w-10 flex-none items-center justify-center rounded-lg', c.bg)}>
+                    <Icon className={cn('h-5 w-5', c.text)} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-muted-foreground">
+                      Module {i} · {m.minutes} min
+                    </p>
+                    <p className="font-semibold leading-tight group-hover:text-primary">{m.title}</p>
+                  </div>
+                </div>
+                <p className="mt-2 flex-1 text-sm text-muted-foreground">{m.tagline}</p>
+                <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                  <ProgressBar value={s.total ? s.mastered / s.total : 0} barClass={c.bar} />
+                  <span className="whitespace-nowrap">
+                    {s.mastered}/{s.total}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section aria-labelledby="new" className="rounded-xl border border-violet-500/40 bg-violet-500/[0.05] p-5 sm:p-6">
+        <h2 id="new" className="flex items-center gap-2 text-lg font-bold text-violet-800 dark:text-violet-300">
+          <Sparkles className="h-5 w-5" /> What changed in 2025–2026
+        </h2>
+        <ul className="mt-3 space-y-2 text-sm">
+          {RECENT.map((u, i) => (
+            <li key={i} className="flex gap-2">
+              <span className="mt-0.5 h-fit rounded bg-violet-500/15 px-1.5 py-0.5 text-xs font-semibold text-violet-800 dark:text-violet-300">{u.year}</span>
+              <span>
+                <RichText md={u.md} />{' '}
+                <Link to={`/${u.module.slug}`} className="text-primary hover:underline">
+                  {u.module.short} →
+                </Link>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
-};
-
-export default Home;
+}

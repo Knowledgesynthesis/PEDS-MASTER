@@ -1,0 +1,260 @@
+import { AlertTriangle } from 'lucide-react';
+import type { Module } from '../types';
+import { doi, pm } from '../links';
+
+export const airway: Module = {
+  slug: 'croup',
+  title: 'Stridor: Croup, Epiglottitis & Look-alikes',
+  short: 'Croup & airway',
+  tagline: 'Score it, steroid it, and never miss the child who is drooling',
+  icon: AlertTriangle,
+  color: 'orange',
+  minutes: 25,
+  objectives: [
+    'Localize obstruction from the phase of stridor',
+    'Grade croup with the Westley score and treat each tier',
+    'Recognize epiglottitis and bacterial tracheitis and manage the airway safely',
+    'Separate croup from foreign body, abscesses, anaphylaxis, and laryngomalacia',
+  ],
+  bottomLine: [
+    'Croup = **barky cough + hoarseness + inspiratory stridor**, age 6 months–3 years, parainfluenza; worse at night.',
+    '**Every** child with croup gets dexamethasone — even mild croup (fewer return visits). Oral works as well as IM; 0.15 mg/kg is as effective as 0.6 mg/kg.',
+    '**Stridor at rest** → nebulized epinephrine; observe **2–4 h** afterwards.',
+    'Humidified/mist air and heliox are not routine therapies.',
+    'Drooling, toxic look, tripod/sniffing posture, muffled voice, **no barky cough** → epiglottitis: keep calm, no throat exam, airway in the OR.',
+    'Croup that suddenly worsens with high fever and poor response to epinephrine → **bacterial tracheitis** (S. aureus).',
+  ],
+  sections: [
+    {
+      id: 'stridor',
+      title: 'Where is the obstruction?',
+      blocks: [
+        {
+          type: 'table',
+          head: ['Sound', 'Level', 'Examples'],
+          rows: [
+            ['Inspiratory stridor', 'Supraglottic / glottic (extrathoracic, collapses on inspiration)', 'Laryngomalacia, epiglottitis, croup (subglottic, mostly inspiratory)'],
+            ['Biphasic stridor', 'Subglottic / upper trachea (fixed)', 'Severe croup, subglottic stenosis or hemangioma, foreign body, bacterial tracheitis'],
+            ['Expiratory wheeze', 'Intrathoracic airways', 'Asthma, bronchiolitis, distal foreign body, vascular ring (biphasic)'],
+          ],
+        },
+        {
+          type: 'list',
+          items: [
+            '**Acute + febrile:** croup, epiglottitis, bacterial tracheitis, retropharyngeal or peritonsillar abscess.',
+            '**Acute + afebrile:** foreign body, anaphylaxis/angioedema, spasmodic croup.',
+            '**Chronic (from birth or early infancy):** laryngomalacia (most common), vocal cord paralysis, subglottic stenosis/hemangioma, vascular ring.',
+          ],
+        },
+      ],
+    },
+    {
+      id: 'croup',
+      title: 'Croup (laryngotracheobronchitis)',
+      refs: ['bjornson-dex', 'parker', 'cochrane-steroids', 'cochrane-epi'],
+      blocks: [
+        {
+          type: 'cards',
+          cards: [
+            { title: 'Who and what', items: ['6 months – 3 years (peak ~2 y); up to 6 y', 'Parainfluenza type 1 most common; also RSV, hMPV, influenza, adenovirus, SARS-CoV-2', 'Subglottic edema — the narrowest part of the child’s airway'] },
+            { title: 'Clinical picture', items: ['1–2 days of coryza, then barky cough, hoarseness, stridor', 'Worse at night; fluctuates with agitation', 'Low-grade fever, child not toxic', 'Usually resolves in 3–5 days'] },
+            { title: 'Diagnosis', items: ['Clinical — no imaging needed', 'AP neck film (if done for atypical cases): **steeple sign**', 'Agitation worsens obstruction: examine on the caregiver’s lap; avoid unnecessary procedures'] },
+          ],
+        },
+        { type: 'tool', id: 'westley' },
+        {
+          type: 'table',
+          caption: 'Treatment by severity',
+          head: ['Severity (Westley)', 'Treatment', 'Disposition'],
+          rows: [
+            ['Mild (≤2): barky cough, no stridor at rest', 'Oral dexamethasone', 'Home'],
+            ['Moderate (3–5): stridor at rest, mild–moderate retractions', 'Oral dexamethasone; nebulized epinephrine if stridor at rest', 'Home if no stridor at rest 2–4 h after epinephrine'],
+            ['Severe (6–11): marked retractions, agitation', 'Nebulized epinephrine (repeat as needed) + dexamethasone', 'Admit if repeated epinephrine or persistent stridor at rest'],
+            ['Impending failure (≥12): lethargy, cyanosis, ↓ air entry', 'Epinephrine, oxygen, airway team', 'PICU; ETT 0.5–1 size smaller'],
+          ],
+        },
+        {
+          type: 'list',
+          title: 'Doses',
+          items: [
+            '**Dexamethasone** 0.15–0.6 mg/kg PO once (max 16 mg); IM/IV if vomiting. Prednisolone 1 mg/kg is an alternative (Parker 2019). Nebulized budesonide 2 mg if the child cannot take oral medicine.',
+            '**Nebulized epinephrine:** racemic 2.25% 0.05 mL/kg (max 0.5 mL) or L-epinephrine 1 mg/mL 0.5 mL/kg (max 5 mL). Equal efficacy. Onset ~10 min, effect fades by ~2 h — symptoms return to baseline, not worse.',
+          ],
+        },
+        {
+          type: 'callout',
+          tone: 'warn',
+          title: 'Atypical croup → look for another cause',
+          items: [
+            'Age <6 months or recurrent "croup" (≥2–3 episodes/year): subglottic stenosis, **subglottic hemangioma** (look for a beard-distribution skin hemangioma), vascular ring, GERD.',
+            'Toxic appearance or no response to epinephrine: bacterial tracheitis, epiglottitis.',
+            'Sudden onset without prodrome: foreign body or anaphylaxis.',
+          ],
+        },
+      ],
+    },
+    {
+      id: 'epiglottitis',
+      title: 'Epiglottitis and bacterial tracheitis',
+      refs: ['redbook'],
+      blocks: [
+        {
+          type: 'table',
+          head: ['', 'Croup', 'Epiglottitis', 'Bacterial tracheitis'],
+          rows: [
+            ['Onset', 'Gradual (1–3 days)', 'Rapid (hours)', 'Croup-like start, sudden worsening'],
+            ['Cough', '**Barky**', 'Absent', 'Barky, productive'],
+            ['Voice', 'Hoarse', '**Muffled** ("hot potato")', 'Hoarse'],
+            ['Drooling / dysphagia', 'No', '**Yes**', 'Usually no'],
+            ['Posture', 'Any', 'Tripod, sniffing, refuses to lie down', 'Any'],
+            ['Appearance / fever', 'Non-toxic, low-grade', 'Toxic, high fever', 'Toxic, high fever'],
+            ['Response to epinephrine', 'Good', 'Poor', 'Poor'],
+            ['Organisms', 'Parainfluenza', 'Hib (unvaccinated), S. pyogenes, S. pneumoniae, S. aureus', 'S. aureus (incl. MRSA), S. pyogenes, M. catarrhalis'],
+            ['X-ray (if ever)', 'Steeple sign', 'Thumb sign', 'Ragged tracheal wall, membranes'],
+          ],
+        },
+        {
+          type: 'callout',
+          tone: 'danger',
+          title: 'Suspected epiglottitis — airway first',
+          items: [
+            'Keep the child **calm and upright with the caregiver**; no tongue depressor, no IV, no lying down, no X-ray trip without airway expertise.',
+            'Call the **most skilled airway team** (anesthesia + ENT) for controlled intubation in the OR; have surgical airway equipment ready.',
+            'After the airway is secured: blood culture, epiglottic culture, IV **ceftriaxone** (add vancomycin if MRSA risk).',
+            'Hib case: **rifampin prophylaxis** for all household contacts when the home includes an under-immunized child <4 years (or an immunocompromised child).',
+          ],
+        },
+        {
+          type: 'text',
+          md: 'Epiglottitis is now rare in children because of Hib vaccination; cases occur in unimmunized or incompletely immunized children and, increasingly, adults. Bacterial tracheitis now causes more pediatric airway ICU admissions than epiglottitis.',
+        },
+      ],
+    },
+    {
+      id: 'lookalikes',
+      title: 'The look-alikes',
+      blocks: [
+        { type: 'tool', id: 'stridor-sorter' },
+        {
+          type: 'list',
+          items: [
+            '**Retropharyngeal abscess** (<5 y): fever, neck pain, **limited neck extension**/torticollis, drooling; widened prevertebral space on a properly extended lateral film; CT with contrast.',
+            '**Peritonsillar abscess** (adolescents): trismus, uvular deviation, hot-potato voice; needle aspiration or I&D.',
+            '**Foreign body:** witnessed choking is the most sensitive clue; normal X-ray does not exclude it; rigid bronchoscopy.',
+            '**Anaphylaxis:** IM epinephrine 0.01 mg/kg (max 0.5 mg) into the thigh — nebulized epinephrine is not a substitute.',
+            '**Laryngomalacia:** onset first 2 weeks, worse supine/feeding, better prone; most resolve by 12–18 months; refer if poor growth, apnea, or cyanosis.',
+          ],
+        },
+      ],
+    },
+  ],
+  pitfalls: [
+    { myth: 'Mild croup does not need steroids.', fact: 'A single oral dexamethasone dose in mild croup reduces return visits and speeds recovery (Bjornson, NEJM 2004).' },
+    { myth: 'Mist or a steamy bathroom treats croup.', fact: 'Humidified air shows no benefit in RCTs or Cochrane review and can scald.' },
+    { myth: 'After epinephrine there is a dangerous rebound.', fact: 'Symptoms return to the pre-treatment baseline as the drug wears off. Observe 2–4 h, with dexamethasone already given.' },
+    { myth: 'A lateral neck X-ray is the first step in suspected epiglottitis.', fact: 'Imaging delays definitive care and moving the child can precipitate obstruction. Airway team first.' },
+    { myth: 'Dexamethasone 0.6 mg/kg is needed.', fact: 'RCTs show 0.15 mg/kg (and prednisolone 1 mg/kg) are non-inferior; 0.6 mg/kg remains acceptable.' },
+    { myth: 'Hib vaccine means epiglottitis can be ignored.', fact: 'Other bacteria (streptococci, S. aureus) and unimmunized children still cause it.' },
+  ],
+  updates: [
+    { year: '2019', md: '**Parker & Cooper RCT** (Pediatrics): dexamethasone 0.15 mg/kg and prednisolone 1 mg/kg are non-inferior to dexamethasone 0.6 mg/kg.' },
+    { year: '2018', md: '**Cochrane (Gates et al.)**: glucocorticoids reduce croup scores within 2 h, return visits, and length of stay.' },
+  ],
+  questions: [
+    {
+      id: 'air-1',
+      stem: 'A 2-year-old has a barky cough and hoarse voice since last night. No stridor at rest, no retractions. Best management?',
+      options: ['Supportive care only', 'Oral dexamethasone and discharge', 'Nebulized epinephrine and 4-h observation', 'Lateral neck X-ray'],
+      answer: 1,
+      explanation: 'Mild croup still benefits from a single oral dose of dexamethasone (fewer return visits). Epinephrine is for stridor at rest.',
+      ref: 'bjornson-dex',
+    },
+    {
+      id: 'air-2',
+      stem: 'A child with croup has stridor at rest and moderate retractions. Dexamethasone was given. Next step?',
+      options: ['Nebulized epinephrine', 'Heliox', 'Albuterol', 'IV antibiotics'],
+      answer: 0,
+      explanation: 'Stridor at rest = moderate–severe croup → nebulized epinephrine, then observe 2–4 h.',
+      ref: 'cochrane-epi',
+    },
+    {
+      id: 'air-3',
+      stem: 'After nebulized epinephrine and dexamethasone, how long should a child with croup be observed before discharge?',
+      options: ['15 minutes', '2–4 hours', '12 hours', 'Overnight admission always'],
+      answer: 1,
+      explanation: 'Epinephrine lasts ~2 h. Discharge if there is no stridor at rest 2–4 h after the last dose.',
+      ref: 'cochrane-epi',
+    },
+    {
+      id: 'air-4',
+      stem: 'An unimmunized 3-year-old has had high fever for 5 h, sits leaning forward, drools, and has a muffled voice. First action?',
+      options: ['Examine the pharynx with a tongue depressor', 'Insert an IV and draw blood cultures', 'Keep the child calm with the parent and call anesthesia/ENT', 'Lateral neck radiograph in radiology'],
+      answer: 2,
+      explanation: 'Classic epiglottitis. Any agitation can cause complete obstruction. Secure the airway in a controlled setting first; cultures and antibiotics follow.',
+      ref: 'redbook',
+    },
+    {
+      id: 'air-5',
+      stem: 'A 4-year-old with 3 days of croup develops T 39.9 °C, toxic appearance, and thick purulent secretions; two epinephrine nebulizers barely help. Most likely diagnosis and pathogen?',
+      options: ['Epiglottitis — Hib', 'Bacterial tracheitis — S. aureus', 'Spasmodic croup — parainfluenza', 'Retropharyngeal abscess — anaerobes'],
+      answer: 1,
+      explanation: 'Bacterial tracheitis complicates viral croup; S. aureus is the leading cause. Many need intubation for secretion management and IV antistaphylococcal therapy.',
+      ref: 'redbook',
+    },
+    {
+      id: 'air-6',
+      stem: 'A 4-month-old has had "croup" three times. Examination shows a red vascular plaque on the chin and lower lip. Concern?',
+      options: ['Laryngomalacia', 'Subglottic hemangioma', 'Recurrent viral croup', 'Gastroesophageal reflux'],
+      answer: 1,
+      explanation: 'Recurrent croup-like stridor in young infants with a beard-distribution hemangioma suggests airway hemangioma. Refer for airway endoscopy; propranolol is the treatment.',
+    },
+    {
+      id: 'air-7',
+      stem: 'Which statement about corticosteroid dosing in croup is best supported by RCT evidence?',
+      options: ['Only IM dexamethasone works', 'Dexamethasone 0.15 mg/kg is non-inferior to 0.6 mg/kg', 'Steroids act within 5 minutes', 'Prednisolone is ineffective'],
+      answer: 1,
+      explanation: 'Parker & Cooper (2019) found dexamethasone 0.15 mg/kg and prednisolone 1 mg/kg non-inferior to 0.6 mg/kg. Oral equals IM. Onset is ~1–2 h.',
+      ref: 'parker',
+    },
+    {
+      id: 'air-8',
+      stem: 'A 2-year-old has fever, refuses to turn or extend the neck, drools, and has a muffled voice. Best imaging?',
+      options: ['AP neck film for steeple sign', 'CT neck with IV contrast', 'Chest X-ray', 'No imaging'],
+      answer: 1,
+      explanation: 'Suspected retropharyngeal abscess: CT with contrast defines abscess vs phlegmon (after airway is assessed as stable).',
+    },
+    {
+      id: 'air-9',
+      stem: 'A 6-week-old has had noisy inspiratory breathing since week 2, worse when supine and feeding, better prone. Weight gain is normal. Management?',
+      options: ['Urgent bronchoscopy', 'Reassure and monitor growth; refer if red flags', 'Racemic epinephrine', 'Oral dexamethasone'],
+      answer: 1,
+      explanation: 'Laryngomalacia — the most common cause of chronic infant stridor — usually resolves by 12–18 months. Refer for feeding difficulty, poor growth, apnea, cyanosis, or severe retractions.',
+    },
+    {
+      id: 'air-10',
+      stem: 'Which Westley component carries the most points?',
+      options: ['Stridor at rest', 'Severe retractions', 'Cyanosis at rest or altered consciousness', 'Decreased air entry'],
+      answer: 2,
+      explanation: 'Cyanosis at rest (5) and disorientation (5) signal impending failure; stridor at rest is 2, severe retractions 3.',
+      ref: 'westley',
+    },
+  ],
+  flashcards: [
+    { id: 'air-c1', front: 'Croup triad', back: 'Barky cough, hoarseness, inspiratory stridor.' },
+    { id: 'air-c2', front: 'Dexamethasone dose for croup', back: '0.15–0.6 mg/kg PO once (max 16 mg). Give in all severities.' },
+    { id: 'air-c3', front: 'When to give nebulized epinephrine', back: 'Stridor at rest / moderate–severe distress. Observe 2–4 h after.' },
+    { id: 'air-c4', front: 'Epiglottitis "3 Ds"', back: 'Drooling, dysphagia, distress (+ muffled voice, tripod/sniffing, toxic, no bark).' },
+    { id: 'air-c5', front: 'Steeple vs thumb sign', back: 'Steeple: subglottic narrowing (croup, AP film). Thumb: swollen epiglottis (lateral film).' },
+    { id: 'air-c6', front: 'Croup that worsens with toxicity and poor epinephrine response', back: 'Bacterial tracheitis (S. aureus).' },
+    { id: 'air-c7', front: 'Most common cause of chronic infant stridor', back: 'Laryngomalacia.' },
+    { id: 'air-c8', front: 'Anaphylaxis epinephrine dose', back: '0.01 mg/kg IM (1 mg/mL), max 0.5 mg, anterolateral thigh.' },
+  ],
+  references: [
+    { id: 'westley', citation: 'Westley CR, Cotton EK, Brooks JG. Nebulized racemic epinephrine by IPPB for the treatment of croup. Am J Dis Child 1978;132:484–487.', url: pm('Westley Cotton Brooks nebulized racemic epinephrine croup 1978') },
+    { id: 'bjornson-dex', citation: 'Bjornson CL et al. A Randomized Trial of a Single Dose of Oral Dexamethasone for Mild Croup. N Engl J Med 2004;351:1306–1313.', url: pm('Bjornson randomized trial single dose oral dexamethasone mild croup') },
+    { id: 'parker', citation: 'Parker CM, Cooper MN. Prednisolone Versus Dexamethasone for Croup: a Randomized Controlled Trial. Pediatrics 2019;144:e20183772.', url: doi('10.1542/peds.2018-3772') },
+    { id: 'cochrane-steroids', citation: 'Gates A et al. Glucocorticoids for croup in children. Cochrane Database Syst Rev 2018;8:CD001955.', url: pm('Gates glucocorticoids for croup in children Cochrane 2018') },
+    { id: 'cochrane-epi', citation: 'Bjornson C et al. Nebulized epinephrine for croup in children. Cochrane Database Syst Rev 2013;10:CD006619.', url: pm('Bjornson nebulized epinephrine for croup in children Cochrane') },
+    { id: 'redbook', citation: 'AAP. Red Book: 2024–2027 Report of the Committee on Infectious Diseases (Haemophilus influenzae; Staphylococcus aureus).' },
+  ],
+};

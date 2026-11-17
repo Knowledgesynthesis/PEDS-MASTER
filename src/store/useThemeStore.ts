@@ -1,36 +1,25 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export type ThemeMode = 'system' | 'light' | 'dark';
+
 interface ThemeStore {
-  isDarkMode: boolean;
-  toggleTheme: () => void;
-  setTheme: (isDark: boolean) => void;
+  mode: ThemeMode;
+  setMode: (mode: ThemeMode) => void;
 }
 
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
-      isDarkMode: false,
-      toggleTheme: () => set((state) => {
-        const newMode = !state.isDarkMode;
-        if (newMode) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        return { isDarkMode: newMode };
-      }),
-      setTheme: (isDark: boolean) => set(() => {
-        if (isDark) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        return { isDarkMode: isDark };
-      }),
+      mode: 'system',
+      setMode: (mode) => set({ mode }),
     }),
-    {
-      name: 'theme-storage',
-    }
+    { name: 'peds-theme' }
   )
 );
+
+export function resolveDark(mode: ThemeMode): boolean {
+  if (mode === 'dark') return true;
+  if (mode === 'light') return false;
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}

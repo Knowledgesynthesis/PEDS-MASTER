@@ -1,0 +1,403 @@
+import { Heart } from 'lucide-react';
+import type { Module } from '../types';
+import { doi, pm } from '../links';
+
+export const chd: Module = {
+  slug: 'chd',
+  title: 'Congenital Heart Disease',
+  short: 'Heart disease',
+  tagline: 'Shunts, cyanosis, ductal dependence, and the murmur that matters',
+  icon: Heart,
+  color: 'pink',
+  minutes: 35,
+  objectives: [
+    'Predict when each lesion presents from transitional physiology',
+    'Distinguish ASD, VSD, PDA, and innocent murmurs at the bedside',
+    'Recognize ductal-dependent lesions and start prostaglandin E₁',
+    'Interpret the pulse-oximetry screen and Qp:Qs',
+    'Apply current endocarditis-prophylaxis criteria',
+  ],
+  bottomLine: [
+    '**Timing is physiology:** ductal-dependent lesions present in days 1–14 (duct closes); large left-to-right shunts at **4–8 weeks** (pulmonary vascular resistance falls).',
+    '**Shock or cyanosis in the first 2 weeks:** treat for sepsis **and** start **PGE₁** if a ductal-dependent lesion is possible. Watch for apnea.',
+    'ASD: **fixed split S2** + pulmonary flow murmur. VSD: **holosystolic LLSB** (small = loud). PDA: **continuous machinery** murmur, bounding pulses.',
+    'Pathologic until proven otherwise: **diastolic**, holosystolic, grade ≥3/thrill, click, abnormal S2, louder on standing, or any symptoms.',
+    'TOF = most common cyanotic CHD overall; **d-TGA** = most common cyanotic lesion presenting in the first days.',
+    'Pulse-ox screen (AAP 2020): **pass** if ≥95% in hand or foot with ≤3% difference; **fail** if <90%; otherwise **one** repeat.',
+    'Endocarditis prophylaxis only for the highest-risk patients — **not** for isolated ASD, VSD, PDA, or bicuspid valve.',
+  ],
+  sections: [
+    {
+      id: 'transition',
+      title: 'Transitional circulation: why timing predicts the lesion',
+      refs: ['park'],
+      blocks: [
+        {
+          type: 'table',
+          head: ['When', 'What changes', 'Lesions that declare themselves'],
+          rows: [
+            ['Hours–day 3', 'Ductus arteriosus functionally closes', 'd-TGA with intact septum (profound cyanosis); critical pulmonary stenosis/atresia'],
+            ['Days 3–14', 'Duct closes completely', '**Left-sided obstruction** (HLHS, critical coarctation, critical AS, interrupted arch) → shock, weak femorals'],
+            ['Weeks 4–8', 'Pulmonary vascular resistance reaches adult levels', '**Large VSD, PDA, AVSD** → heart failure (tachypnea, sweating with feeds, poor weight gain)'],
+            ['2–3 months', 'Pulmonary artery pressure falls below coronary perfusion pressure', 'ALCAPA → infarct pattern (Q waves I, aVL), irritability with feeds'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'acyanotic',
+      title: 'Left-to-right shunts',
+      refs: ['park', 'down'],
+      blocks: [
+        {
+          type: 'table',
+          head: ['', 'ASD (secundum)', 'VSD', 'PDA', 'AVSD'],
+          rows: [
+            ['Murmur', 'Systolic ejection, LUSB (pulmonary flow); mid-diastolic rumble LLSB if large', 'Holosystolic, LLSB; **smaller defect = louder**; apical rumble if large', 'Continuous "machinery", left infraclavicular', 'Holosystolic (VSD/mitral cleft) ± rumble'],
+            ['S2', '**Widely fixed split**', 'Loud P2 if pulmonary hypertension', 'Often obscured', 'Loud P2 early'],
+            ['Pulses', 'Normal', 'Normal', '**Bounding**, wide pulse pressure', 'Normal'],
+            ['ECG', 'Right axis, rSR′ in V1', 'LVH (or BVH if large)', 'LVH', '**Superior (left) axis**'],
+            ['Presentation', 'Usually asymptomatic in childhood', 'Small: murmur only. Large: HF at 4–8 wk', 'Preterm: ventilator dependence. Term: murmur', 'HF in infancy; **Down syndrome**'],
+            ['Natural history', 'Defects <5 mm often close by 1–2 y', 'Many muscular/small defects close spontaneously', 'Preterm ducts often close without treatment', 'Never closes; early pulmonary vascular disease'],
+            ['Intervention', 'Device/surgery at 2–5 y if RV dilated (Qp:Qs ≥1.5)', 'Large: surgery in first year (before irreversible PVD)', 'Transcatheter closure if hemodynamically significant', 'Surgery at 3–6 months'],
+          ],
+        },
+        {
+          type: 'callout',
+          tone: 'warn',
+          title: 'Eisenmenger syndrome',
+          md: 'An unrepaired large shunt causes irreversible pulmonary vascular disease; the shunt reverses (right-to-left) → cyanosis, clubbing, erythrocytosis. Closure is then contraindicated. Prevention is timely repair.',
+        },
+        {
+          type: 'text',
+          md: 'Every newborn with **Down syndrome** gets an echocardiogram (≈40–50% have CHD; AVSD is the most typical lesion), even with a normal exam — pulmonary hypertension can mask the murmur.',
+        },
+        { type: 'tool', id: 'qpqs' },
+      ],
+    },
+    {
+      id: 'pda-preterm',
+      title: 'PDA in preterm infants: the evidence shifted',
+      refs: ['beneductus', 'babyoscar'],
+      blocks: [
+        {
+          type: 'list',
+          items: [
+            'Incidence rises as gestational age falls; many close spontaneously in the first weeks.',
+            '**BeNeDuctus (NEJM 2023):** in infants <28 weeks, expectant management was non-inferior to early ibuprofen for death, NEC, or BPD.',
+            '**Baby-OSCAR (NEJM 2024):** early selective ibuprofen for large PDA in <29-week infants did not reduce death or moderate–severe BPD.',
+            'Result: routine early pharmacologic closure has fallen out of favor; treatment (ibuprofen, indomethacin, acetaminophen, or transcatheter closure) is individualized for hemodynamic compromise.',
+          ],
+        },
+      ],
+    },
+    {
+      id: 'cyanotic',
+      title: 'Cyanotic heart disease',
+      refs: ['park'],
+      blocks: [
+        {
+          type: 'table',
+          head: ['Physiology', 'Lesions', 'Key clues'],
+          rows: [
+            ['↓ Pulmonary blood flow', '**Tetralogy of Fallot**, pulmonary atresia, tricuspid atresia, critical PS, severe Ebstein', 'Oligemic lungs; boot-shaped heart (TOF); tet spells; Ebstein ↔ maternal lithium'],
+            ['Parallel circulations', '**d-Transposition of the great arteries**', 'Cyanosis in first hours, little distress, "egg on a string"; infant of diabetic mother'],
+            ['Complete mixing', 'Truncus arteriosus, TAPVR, HLHS/single ventricle', 'Variable cyanosis + heart failure; obstructed TAPVR = surgical emergency with white-out lungs'],
+          ],
+          note: 'The "5 Ts": Tetralogy, Transposition, Truncus, Tricuspid atresia, Total anomalous pulmonary venous return.',
+        },
+        {
+          type: 'cards',
+          cards: [
+            {
+              title: 'Tetralogy of Fallot',
+              items: [
+                'VSD, overriding aorta, RV outflow obstruction, RVH',
+                'Murmur = RVOT obstruction (harsh SEM, LUSB); it **softens during a spell** as flow drops',
+                'Complete repair usually at 3–6 months',
+                'Test for **22q11.2 deletion** (especially with right aortic arch)',
+              ],
+            },
+            {
+              title: 'Hypercyanotic ("tet") spell',
+              tone: 'danger',
+              items: [
+                'Calm the child; **knees to chest** (↑ systemic resistance)',
+                'Oxygen; IV/IN morphine or fentanyl; fluid bolus',
+                'Phenylephrine to raise SVR; IV propranolol/esmolol',
+                'Urgent surgical referral after any spell',
+              ],
+            },
+            {
+              title: 'Hyperoxia test',
+              items: [
+                'Pre-ductal PaO₂ on 100% O₂',
+                '**<100 mmHg** strongly suggests cyanotic CHD',
+                'Lung disease usually rises >150 mmHg',
+                'Differential cyanosis (feet bluer than hand) → PPHN, critical coarctation, interrupted arch',
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'ductal',
+      title: 'Ductal-dependent lesions and PGE₁',
+      refs: ['park'],
+      blocks: [
+        {
+          type: 'cards',
+          cards: [
+            { title: 'Systemic flow depends on the duct', tone: 'danger', items: ['HLHS, critical AS, critical coarctation, interrupted aortic arch', 'Duct closes → **shock**, acidosis, weak or absent femoral pulses', 'Mimics sepsis at 1–2 weeks'] },
+            { title: 'Pulmonary flow depends on the duct', tone: 'warn', items: ['Pulmonary atresia, critical PS, tricuspid atresia, severe TOF', 'Duct closes → **progressive cyanosis**'] },
+            { title: 'Treatment', tone: 'info', items: ['**Alprostadil (PGE₁)** infusion, typically 0.01–0.1 mcg/kg/min', 'Side effects: **apnea** (be ready to intubate), fever, flushing, hypotension', 'Do not wait for echo if suspicion is high'] },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'screening',
+      title: 'Pulse-oximetry screening for critical CHD',
+      refs: ['cchd'],
+      blocks: [
+        { type: 'text', md: 'Screen at **≥24 h** of age (or before early discharge), right hand + either foot. The 2020 AAP-endorsed algorithm reduced repeats from two to **one**, cutting time to diagnosis.' },
+        { type: 'tool', id: 'cchd-screen' },
+        { type: 'callout', tone: 'warn', title: 'Blind spot', md: 'Screening misses many **left-sided obstructive lesions (especially coarctation)** because lower-body saturation can be normal. Palpate femoral pulses and compare arm/leg BP.' },
+      ],
+    },
+    {
+      id: 'murmurs',
+      title: 'Innocent vs pathologic murmurs',
+      refs: ['frank'],
+      blocks: [
+        {
+          type: 'table',
+          head: ['Innocent murmur', 'Age', 'Features'],
+          rows: [
+            ['**Still’s**', '2–7 y', 'Vibratory, musical, low-pitched, LLSB/apex; louder supine, softer standing'],
+            ['**Venous hum**', '3–6 y', 'Continuous, infraclavicular; disappears supine or with neck turn/jugular compression'],
+            ['**Pulmonary flow**', 'School age/adolescent', 'Soft SEM at LUSB, normal S2 splitting'],
+            ['**Peripheral pulmonary stenosis**', 'Newborn – 6 mo', 'Soft SEM radiating to both axillae and back; resolves by ~6 months'],
+            ['**Carotid bruit**', 'Any', 'Supraclavicular, early systolic'],
+          ],
+          note: 'Innocent murmurs are soft (≤2/6), systolic (except venous hum), short, single (no clicks), and change with position. The rest of the cardiac exam is normal.',
+        },
+        {
+          type: 'callout',
+          tone: 'danger',
+          title: 'Refer (echo/cardiology) for any of',
+          items: [
+            'Diastolic or holosystolic murmur; grade ≥3/6 or a thrill',
+            'Ejection click; fixed or single S2; gallop',
+            'Murmur louder on standing or Valsalva (HCM)',
+            'Symptoms: poor feeding, sweating, failure to thrive, syncope, exertional chest pain',
+            'Abnormal pulses (weak femorals, bounding), cyanosis, hepatomegaly',
+            'Syndrome or family history of cardiomyopathy or sudden death',
+          ],
+        },
+        { type: 'tool', id: 'murmur-quiz' },
+      ],
+    },
+    {
+      id: 'hf',
+      title: 'Heart failure in infants',
+      blocks: [
+        {
+          type: 'list',
+          items: [
+            'Infants show HF as **feeding problems**: tachypnea and sweating with feeds, prolonged feeds, poor weight gain.',
+            '**Hepatomegaly** is a more reliable sign than edema or crackles.',
+            'Management: diuretics (furosemide), calorie-dense feeds (24–30 kcal/oz, NG if needed), treat the lesion.',
+            'Any age: think **myocarditis** (viral prodrome, tachycardia out of proportion to fever, gallop), **SVT** (HR ≥220 in infants, fixed), cardiomyopathy.',
+          ],
+        },
+      ],
+    },
+    {
+      id: 'associations',
+      title: 'High-yield associations',
+      blocks: [
+        {
+          type: 'table',
+          head: ['Condition', 'Typical cardiac lesion'],
+          rows: [
+            ['Down syndrome (trisomy 21)', 'AVSD, VSD, ASD'],
+            ['Turner syndrome (45,X)', 'Bicuspid aortic valve, coarctation'],
+            ['22q11.2 deletion', 'Conotruncal: TOF, truncus, interrupted aortic arch (type B)'],
+            ['Williams syndrome', 'Supravalvar aortic stenosis, peripheral PS'],
+            ['Noonan syndrome', 'Dysplastic pulmonary valve stenosis, HCM'],
+            ['Marfan syndrome', 'Aortic root dilation, mitral valve prolapse'],
+            ['Maternal diabetes', 'd-TGA, VSD, transient septal hypertrophy'],
+            ['Maternal lupus (anti-Ro/La)', 'Congenital complete heart block'],
+            ['Maternal lithium', 'Ebstein anomaly (absolute risk low)'],
+            ['Congenital rubella', 'PDA, peripheral pulmonary stenosis'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'ie',
+      title: 'Endocarditis prophylaxis (AHA 2021)',
+      refs: ['aha-ie'],
+      blocks: [
+        {
+          type: 'cards',
+          cards: [
+            {
+              title: 'Give before dental procedures with gingival manipulation',
+              tone: 'success',
+              items: [
+                'Prosthetic valve or prosthetic material used for valve repair',
+                'Previous infective endocarditis',
+                'Unrepaired cyanotic CHD, including palliative shunts and conduits',
+                'Repaired CHD with prosthetic material/device — first 6 months',
+                'Repaired CHD with residual defect at or next to prosthetic material',
+                'Cardiac transplant with valvulopathy',
+              ],
+            },
+            {
+              title: 'Not indicated',
+              tone: 'neutral',
+              items: ['Isolated ASD, VSD, PDA (unrepaired or repaired >6 months, no residua)', 'Bicuspid aortic valve, mitral valve prolapse', 'Innocent murmurs', 'GI/GU procedures'],
+            },
+          ],
+        },
+        { type: 'text', md: 'Regimen: amoxicillin 50 mg/kg (max 2 g) PO 30–60 min before. Daily oral hygiene matters more than prophylaxis.' },
+      ],
+    },
+  ],
+  pitfalls: [
+    { myth: 'A loud VSD murmur means a big hole.', fact: 'Small restrictive VSDs are loudest. Large VSDs may have a soft murmur once pressures equalize — the dangerous ones can be quiet.' },
+    { myth: 'A passed pulse-oximetry screen rules out critical CHD.', fact: 'Coarctation and other left-sided lesions are frequently missed. Check femoral pulses at every newborn exam.' },
+    { myth: 'A septic-looking 10-day-old just needs antibiotics.', fact: 'Ductal-dependent systemic lesions present the same way. Feel femoral pulses, check four-limb BP and pre/post-ductal saturations, and start PGE₁ if suspicious.' },
+    { myth: 'Fixed split S2 is pathognomonic for ASD.', fact: 'It is the hallmark, but pulmonary hypertension or RBBB can alter splitting; confirm with echo.' },
+    { myth: 'All children with CHD need endocarditis prophylaxis.', fact: 'Since AHA 2007 (reaffirmed 2021) only the highest-risk groups receive it.' },
+    { myth: 'Every preterm PDA should be closed with ibuprofen early.', fact: 'BeNeDuctus (2023) and Baby-OSCAR (2024) found no benefit of early routine treatment.' },
+  ],
+  updates: [
+    { year: '2024', md: '**Baby-OSCAR** (NEJM): early selective ibuprofen for large PDA in <29-week infants did not reduce death or BPD.' },
+    { year: '2023', md: '**BeNeDuctus** (NEJM): expectant PDA management non-inferior to early ibuprofen in <28-week infants.' },
+    { year: '2021', md: '**AHA scientific statement** reaffirmed restricting IE prophylaxis to highest-risk cardiac conditions.' },
+    { year: '2020', md: '**Updated CCHD pulse-oximetry algorithm:** one repeat instead of two; pass requires ≥95% in hand or foot and ≤3% difference.' },
+  ],
+  questions: [
+    {
+      id: 'chd-1',
+      stem: 'A 6-week-old has tachypnea and sweating during feeds and has crossed two weight percentiles. A grade 3/6 holosystolic murmur is heard at the LLSB with an apical diastolic rumble. Why did symptoms start now rather than at birth?',
+      options: ['The ductus arteriosus closed', 'Pulmonary vascular resistance has fallen, increasing left-to-right flow', 'Foramen ovale closed', 'Fetal hemoglobin has been replaced'],
+      answer: 1,
+      explanation: 'PVR falls over 4–8 weeks; shunt volume through a large VSD rises, causing pulmonary over-circulation and heart failure. The apical rumble reflects increased mitral flow from a large shunt.',
+      ref: 'park',
+    },
+    {
+      id: 'chd-2',
+      stem: 'A 9-day-old presents with grey color, poor feeding, and lactic acidosis. Femoral pulses are absent. Besides fluids and antibiotics, the most important immediate therapy is:',
+      options: ['Adenosine', 'Prostaglandin E₁ infusion', 'Indomethacin', 'Furosemide'],
+      answer: 1,
+      explanation: 'Shock with absent femoral pulses at 1–2 weeks suggests a ductal-dependent systemic lesion (critical coarctation, HLHS, interrupted arch). PGE₁ reopens the duct. Indomethacin would close it. Prepare for apnea.',
+      ref: 'park',
+    },
+    {
+      id: 'chd-3',
+      stem: 'Pulse oximetry at 26 h: right hand 97%, foot 93%. Interpretation (AAP 2020 algorithm)?',
+      options: ['Pass', 'Fail', 'Repeat in 1 hour', 'Repeat twice more over 2 hours'],
+      answer: 2,
+      explanation: 'One value is ≥95% but the difference is 4% (>3%), so the screen is repeated once in 1 hour. A persistent result fails.',
+      ref: 'cchd',
+    },
+    {
+      id: 'chd-4',
+      stem: 'A 4-year-old has a grade 2/6 vibratory, musical systolic murmur at the LLSB that is louder supine and softer when standing. S2 splits normally. Next step?',
+      options: ['Echocardiogram', 'ECG and chest radiograph', 'Reassure — Still’s murmur', 'Refer to cardiology'],
+      answer: 2,
+      explanation: 'Classic Still’s murmur: innocent, no testing needed when the history and remainder of the exam are normal.',
+      ref: 'frank',
+    },
+    {
+      id: 'chd-5',
+      stem: 'Which murmur is MOST suggestive of hypertrophic cardiomyopathy?',
+      options: ['Systolic murmur that softens on standing', 'Systolic murmur louder with standing and Valsalva', 'Continuous murmur abolished supine', 'Murmur radiating to both axillae in a newborn'],
+      answer: 1,
+      explanation: 'Decreased preload (standing, Valsalva) narrows the outflow tract and intensifies the HCM murmur. Still’s murmur softens on standing; venous hum disappears supine; PPS radiates to axillae.',
+      ref: 'frank',
+    },
+    {
+      id: 'chd-6',
+      stem: 'Cyanosis appears within hours of birth in a macrosomic infant of a diabetic mother; there is little respiratory distress and the murmur is soft. CXR: narrow mediastinum. Most likely lesion?',
+      options: ['Tetralogy of Fallot', 'd-Transposition of the great arteries', 'Total anomalous pulmonary venous return', 'Large VSD'],
+      answer: 1,
+      explanation: 'd-TGA: early profound cyanosis with minimal distress, "egg on a string" (narrow mediastinum), associated with maternal diabetes. Needs PGE₁, often balloon atrial septostomy, then arterial switch.',
+      ref: 'park',
+    },
+    {
+      id: 'chd-7',
+      stem: 'A 5-month-old with tetralogy of Fallot becomes deeply cyanotic and irritable after crying; the murmur becomes softer. First maneuver?',
+      options: ['Lay flat and give albuterol', 'Place in knee-chest position and give oxygen', 'Start dopamine', 'Give furosemide'],
+      answer: 1,
+      explanation: 'Knee-chest raises systemic vascular resistance and pushes blood through the RVOT. Then morphine, fluid, phenylephrine, beta-blocker. The murmur softens because less blood crosses the obstructed RVOT.',
+      ref: 'park',
+    },
+    {
+      id: 'chd-8',
+      stem: 'Which patient should receive antibiotic prophylaxis before a dental extraction?',
+      options: ['8-year-old with an unrepaired small VSD', '12-year-old with bicuspid aortic valve', '6-year-old 3 months after transcatheter ASD device closure', '10-year-old with mitral valve prolapse'],
+      answer: 2,
+      explanation: 'Prophylaxis covers repaired CHD with prosthetic material during the first 6 months after the procedure. Isolated VSD, bicuspid valve, and MVP do not qualify.',
+      ref: 'aha-ie',
+    },
+    {
+      id: 'chd-9',
+      stem: 'Saturations: aorta 97%, SVC 72%, pulmonary vein 99%, pulmonary artery 86%. Qp:Qs is approximately:',
+      options: ['0.6', '1.0', '1.9', '3.5'],
+      answer: 2,
+      explanation: '(97 − 72) / (99 − 86) = 25/13 ≈ 1.9 — a moderate–large left-to-right shunt; with RV dilation this ASD would meet closure criteria.',
+      ref: 'park',
+    },
+    {
+      id: 'chd-10',
+      stem: 'Which ECG finding points to a primum ASD/AVSD rather than a secundum ASD?',
+      options: ['Right axis deviation', 'Superior (left) axis deviation', 'Delta wave', 'Low-voltage QRS'],
+      answer: 1,
+      explanation: 'AV canal defects displace the conduction system, producing a superior QRS axis. Secundum ASD gives right axis deviation and rSR′ in V1.',
+      ref: 'park',
+    },
+    {
+      id: 'chd-11',
+      stem: 'Which newborn needs an echocardiogram even with a normal cardiac exam?',
+      options: ['Infant with a sacral dimple', 'Infant with Down syndrome', 'Infant with a single umbilical artery and normal exam', 'Infant with physiologic jaundice'],
+      answer: 1,
+      explanation: 'AAP recommends echocardiography for all newborns with Down syndrome — CHD is common and pulmonary hypertension can mask murmurs.',
+      ref: 'down',
+    },
+    {
+      id: 'chd-12',
+      stem: 'For a 26-week infant with a large PDA on day 3 who is stable on modest support, current trial evidence (BeNeDuctus, Baby-OSCAR) best supports:',
+      options: ['Immediate surgical ligation', 'Routine early ibuprofen', 'Expectant management with treatment reserved for hemodynamic compromise', 'Prostaglandin E₁'],
+      answer: 2,
+      explanation: 'Both RCTs found no benefit from early routine pharmacologic closure in extremely preterm infants.',
+      ref: 'beneductus',
+    },
+  ],
+  flashcards: [
+    { id: 'chd-c1', front: 'Fixed split S2', back: 'ASD — constant RV volume load makes P2 late in both phases of respiration.' },
+    { id: 'chd-c2', front: 'Continuous machinery murmur + bounding pulses', back: 'PDA.' },
+    { id: 'chd-c3', front: 'When do large VSDs cause heart failure?', back: '4–8 weeks, as pulmonary vascular resistance falls.' },
+    { id: 'chd-c4', front: 'Shock + absent femoral pulses at 1–2 weeks', back: 'Ductal-dependent systemic lesion (coarctation, HLHS, interrupted arch) → PGE₁.' },
+    { id: 'chd-c5', front: 'Key PGE₁ side effect', back: 'Apnea.' },
+    { id: 'chd-c6', front: 'CCHD screen pass criteria', back: '≥95% in right hand or foot AND ≤3% hand–foot difference.' },
+    { id: 'chd-c7', front: 'Superior QRS axis', back: 'AVSD / primum ASD (Down syndrome).' },
+    { id: 'chd-c8', front: 'Tet spell first step', back: 'Calm, knee-chest position, oxygen; then morphine, fluids, phenylephrine.' },
+    { id: 'chd-c9', front: '22q11.2 deletion heart lesions', back: 'Conotruncal: TOF, truncus arteriosus, interrupted aortic arch type B.' },
+    { id: 'chd-c10', front: 'Murmur louder on standing', back: 'Hypertrophic cardiomyopathy (or MVP click moves earlier) — never innocent.' },
+  ],
+  references: [
+    { id: 'park', citation: 'Park MK, Salamat M. Park’s Pediatric Cardiology for Practitioners, 7th ed. Elsevier, 2021.' },
+    { id: 'cchd', citation: 'Martin GR et al. Updated Strategies for Pulse Oximetry Screening for Critical Congenital Heart Disease. Pediatrics 2020;146:e20191650.', url: doi('10.1542/peds.2019-1650') },
+    { id: 'aha-ie', citation: 'Wilson WR et al. Prevention of Viridans Group Streptococcal Infective Endocarditis: AHA Scientific Statement. Circulation 2021;143:e963–e978.', url: pm('Prevention of Viridans Group Streptococcal Infective Endocarditis scientific statement American Heart Association 2021') },
+    { id: 'beneductus', citation: 'Hundscheid T et al. Expectant Management or Early Ibuprofen for Patent Ductus Arteriosus. N Engl J Med 2023;388:980–990.', url: pm('Hundscheid expectant management or early ibuprofen for patent ductus arteriosus') },
+    { id: 'babyoscar', citation: 'Gupta S et al. Trial of Selective Early Treatment of Patent Ductus Arteriosus with Ibuprofen. N Engl J Med 2024;390:314–325.', url: pm('Trial of Selective Early Treatment of Patent Ductus Arteriosus with Ibuprofen') },
+    { id: 'frank', citation: 'Frank JE, Jacobe KM. Evaluation and Management of Heart Murmurs in Children. Am Fam Physician 2011;84:793–800.', url: pm('Frank Jacobe evaluation and management of heart murmurs in children 2011') },
+    { id: 'down', citation: 'Bull MJ et al; AAP Council on Genetics. Health Supervision for Children and Adolescents With Down Syndrome. Pediatrics 2022;149:e2022057010.', url: doi('10.1542/peds.2022-057010') },
+  ],
+};
