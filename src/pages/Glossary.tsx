@@ -1,86 +1,78 @@
-import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { glossaryTerms } from '@/data/glossary';
-import { Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Search, BookOpen } from 'lucide-react';
+import { GLOSSARY } from '@/content/glossary';
+import { MODULES, moduleBySlug } from '@/content';
+import { RichText } from '@/components/content/RichText';
+import { stripMd } from '@/lib/text';
+import { cn } from '@/lib/utils';
 
-const Glossary: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+export default function Glossary() {
+  const [params] = useSearchParams();
+  const [q, setQ] = useState(params.get('q') ?? '');
+  const [mod, setMod] = useState<string>('all');
 
-  const categories = ['All', ...Array.from(new Set(glossaryTerms.map(t => t.category)))];
-
-  const filteredTerms = glossaryTerms.filter(term => {
-    const matchesSearch = term.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      term.definition.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || term.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const terms = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return GLOSSARY.filter((t) => (mod === 'all' || t.module === mod) && (!needle || `${t.term} ${stripMd(t.definition)}`.toLowerCase().includes(needle)));
+  }, [q, mod]);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Glossary</h1>
-        <p className="text-muted-foreground mt-2">Key pediatric terms and definitions</p>
+    <div className="mx-auto max-w-4xl space-y-6">
+      <header className="flex items-start gap-3">
+        <BookOpen className="mt-1 h-7 w-7 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Glossary</h1>
+          <p className="text-muted-foreground">{GLOSSARY.length} high-yield terms, scores, and doses — each linked to its module.</p>
+        </div>
+      </header>
+      <div className="space-y-3 rounded-xl border bg-card p-4">
+        <label className="relative block">
+          <span className="sr-only">Search terms</span>
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search terms or definitions…"
+            className="w-full rounded-lg border border-input bg-background py-2 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {[{ slug: 'all', short: 'All' }, ...MODULES].map((m) => (
+            <button
+              key={m.slug}
+              type="button"
+              aria-pressed={mod === m.slug}
+              onClick={() => setMod(m.slug)}
+              className={cn('rounded-full border px-3 py-1 text-xs', mod === m.slug ? 'border-primary bg-primary/10 font-medium' : 'text-muted-foreground hover:bg-accent')}
+            >
+              {m.short}
+            </button>
+          ))}
+        </div>
       </div>
-
-      {/* Search and Filter */}
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search terms..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {categories.map(category => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Terms List */}
-      <div className="space-y-4">
-        {filteredTerms.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6 text-center text-muted-foreground">
-              No terms found matching your search.
-            </CardContent>
-          </Card>
-        ) : (
-          filteredTerms.map((item, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1 flex-1">
-                    <CardTitle className="text-lg">{item.term}</CardTitle>
-                    <CardDescription>{item.definition}</CardDescription>
-                  </div>
-                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
-                    {item.category}
-                  </span>
-                </div>
-              </CardHeader>
-            </Card>
-          ))
-        )}
-      </div>
+      {terms.length === 0 ? (
+        <p className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">No terms match.</p>
+      ) : (
+        <dl className="divide-y rounded-xl border bg-card">
+          {terms.map((t) => {
+            const m = t.module ? moduleBySlug(t.module) : undefined;
+            return (
+              <div key={t.term} className="flex flex-col gap-1 p-4 sm:flex-row sm:gap-4">
+                <dt className="font-semibold sm:w-56 sm:flex-none">{t.term}</dt>
+                <dd className="flex-1 text-sm text-muted-foreground">
+                  <RichText md={t.definition} />
+                  {m && (
+                    <Link to={`/${m.slug}`} className="ml-2 whitespace-nowrap text-xs font-medium text-primary hover:underline">
+                      {m.short} →
+                    </Link>
+                  )}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+      )}
     </div>
   );
-};
-
-export default Glossary;
+}

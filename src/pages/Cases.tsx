@@ -1,193 +1,194 @@
-import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FileText, ArrowLeft, ArrowRight, CheckCircle2, XCircle, RotateCcw, MapPin } from 'lucide-react';
+import { CASES } from '@/content/cases';
+import { moduleBySlug } from '@/content';
+import type { ClinicalCase } from '@/content/types';
+import { RichText } from '@/components/content/RichText';
 import { Button } from '@/components/ui/Button';
-import { FileText, CheckCircle2, XCircle } from 'lucide-react';
-import { clinicalCases } from '@/data/cases';
+import { buttonClass } from '@/components/ui/buttonClass';
+import { ProgressBar } from '@/components/ui/Inputs';
+import { useProgressStore } from '@/store/useProgressStore';
+import { moduleColor } from '@/lib/theme';
+import { cn, hashString, shuffle } from '@/lib/utils';
 
-const Cases: React.FC = () => {
-  const [selectedCase, setSelectedCase] = useState<number | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
+function CasePlayer({ c, onExit }: { c: ClinicalCase; onExit: () => void }) {
+  const recordCase = useProgressStore((s) => s.recordCase);
+  const [stage, setStage] = useState(0);
+  const [picks, setPicks] = useState<number[]>([]);
+  const [firstTry, setFirstTry] = useState<boolean[]>([]);
+  const [done, setDone] = useState(false);
+  const s = c.stages[stage];
+  const order = shuffle(s.options.map((_, i) => i), hashString(c.id) + stage);
+  const solved = picks.some((p) => s.options[p].correct);
+  const mod = moduleBySlug(c.module);
 
-  const handleCaseSelect = (id: number) => {
-    setSelectedCase(id);
-    setSelectedAnswer(null);
-    setShowResult(false);
+  const pick = (i: number) => {
+    if (solved || picks.includes(i)) return;
+    const next = [...picks, i];
+    setPicks(next);
+    if (picks.length === 0) setFirstTry((f) => [...f, s.options[i].correct]);
   };
 
-  const handleAnswerSelect = (index: number) => {
-    setSelectedAnswer(index);
-    setShowResult(false);
-  };
-
-  const handleSubmit = () => {
-    if (selectedAnswer !== null) {
-      setShowResult(true);
+  const advance = () => {
+    if (stage + 1 < c.stages.length) {
+      setStage(stage + 1);
+      setPicks([]);
+    } else {
+      recordCase(c.id, firstTry.filter(Boolean).length, c.stages.length);
+      setDone(true);
     }
   };
 
-  const currentCase = clinicalCases.find(c => c.id === selectedCase);
-
-  return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center space-x-3">
-        <FileText className="h-8 w-8 text-teal-500" />
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Clinical Cases</h1>
-          <p className="text-muted-foreground mt-1">Interactive pediatric case scenarios</p>
+  if (done) {
+    const score = firstTry.filter(Boolean).length;
+    return (
+      <div className="space-y-4 rounded-xl border bg-card p-6 text-center">
+        <p className="text-sm text-muted-foreground">{c.title}</p>
+        <p className="text-3xl font-bold">
+          {score}/{c.stages.length} <span className="text-lg font-normal text-muted-foreground">right first time</span>
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          <Button onClick={onExit}>
+            <ArrowLeft className="h-4 w-4" /> All cases
+          </Button>
+          {mod && (
+            <Link to={`/${mod.slug}`} className={buttonClass('outline')}>
+              Review {mod.short}
+            </Link>
+          )}
         </div>
       </div>
+    );
+  }
 
-      {/* Case Selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Select a Clinical Case</CardTitle>
-          <CardDescription>Practice applying pediatric knowledge to realistic scenarios</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {clinicalCases.map(c => (
-              <Button
-                key={c.id}
-                variant={selectedCase === c.id ? 'default' : 'outline'}
-                onClick={() => handleCaseSelect(c.id)}
-                className="w-full justify-start h-auto py-3"
-              >
-                <div className="text-left">
-                  <div className="font-semibold">Case {c.id}: {c.title}</div>
-                  <div className="text-xs opacity-75 mt-1">{c.category}</div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Case Display */}
-      {currentCase && (
-        <div className="space-y-6">
-          {/* Scenario */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Case {currentCase.id}: {currentCase.title}</CardTitle>
-                  <CardDescription className="mt-2">
-                    <span className="inline-block px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
-                      {currentCase.category}
-                    </span>
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-base leading-relaxed">{currentCase.scenario}</p>
-            </CardContent>
-          </Card>
-
-          {/* Question and Options */}
-          <Card className="border-primary/50">
-            <CardHeader>
-              <CardTitle>Question</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-base font-semibold">{currentCase.question}</p>
-
-              <div className="space-y-3">
-                {currentCase.options.map((option, index) => (
-                  <label
-                    key={index}
-                    className={`flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      selectedAnswer === index
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
-                    } ${
-                      showResult
-                        ? index === currentCase.correctAnswer
-                          ? 'border-green-500 bg-green-500/10'
-                          : selectedAnswer === index
-                          ? 'border-red-500 bg-red-500/10'
-                          : ''
-                        : ''
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="answer"
-                      checked={selectedAnswer === index}
-                      onChange={() => handleAnswerSelect(index)}
-                      disabled={showResult}
-                      className="mt-1"
-                    />
-                    <div className="flex-1">
-                      <span className="text-sm">{option}</span>
-                      {showResult && index === currentCase.correctAnswer && (
-                        <div className="flex items-center space-x-2 mt-2 text-green-600">
-                          <CheckCircle2 className="h-4 w-4" />
-                          <span className="text-xs font-semibold">Correct Answer</span>
-                        </div>
-                      )}
-                      {showResult && selectedAnswer === index && index !== currentCase.correctAnswer && (
-                        <div className="flex items-center space-x-2 mt-2 text-red-600">
-                          <XCircle className="h-4 w-4" />
-                          <span className="text-xs font-semibold">Incorrect</span>
-                        </div>
-                      )}
-                    </div>
-                  </label>
-                ))}
-              </div>
-
-              {!showResult && (
-                <Button
-                  onClick={handleSubmit}
-                  disabled={selectedAnswer === null}
-                  className="w-full"
-                >
-                  Submit Answer
-                </Button>
-              )}
-
-              {showResult && (
-                <div className="space-y-4">
-                  <div className={`p-4 rounded-md border ${
-                    selectedAnswer === currentCase.correctAnswer
-                      ? 'bg-green-500/10 border-green-500/50'
-                      : 'bg-red-500/10 border-red-500/50'
-                  }`}>
-                    <h4 className="font-semibold mb-2">
-                      {selectedAnswer === currentCase.correctAnswer ? 'Correct!' : 'Incorrect'}
-                    </h4>
-                    <p className="text-sm">{currentCase.explanation}</p>
-                  </div>
-
-                  <Button
-                    onClick={() => {
-                      setSelectedAnswer(null);
-                      setShowResult(false);
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    Try Again
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <button type="button" onClick={onExit} className="inline-flex items-center gap-1 hover:text-foreground">
+          <ArrowLeft className="h-3.5 w-3.5" /> Cases
+        </button>
+        <ProgressBar value={stage / c.stages.length} />
+        <span className="whitespace-nowrap">
+          Step {stage + 1}/{c.stages.length}
+        </span>
+      </div>
+      <div className="space-y-4 rounded-xl border bg-card p-5">
+        <div>
+          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" /> {c.setting}
+          </p>
+          <h2 className="text-lg font-semibold">{c.title}</h2>
         </div>
-      )}
-
-      {!currentCase && (
-        <Card>
-          <CardContent className="pt-6 text-center text-muted-foreground">
-            <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Select a case above to begin</p>
-          </CardContent>
-        </Card>
-      )}
+        <p className="leading-relaxed">
+          <RichText md={s.narrative} />
+        </p>
+        {s.data && (
+          <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {s.data.map((d) => (
+              <div key={d.label} className="rounded-lg bg-muted/60 px-3 py-2">
+                <dt className="text-xs text-muted-foreground">{d.label}</dt>
+                <dd className="font-semibold">{d.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        <p className="font-medium">{s.question}</p>
+        <div className="space-y-2">
+          {order.map((i) => {
+            const o = s.options[i];
+            const chosen = picks.includes(i);
+            return (
+              <div key={i}>
+                <button
+                  type="button"
+                  disabled={solved || chosen}
+                  onClick={() => pick(i)}
+                  className={cn(
+                    'flex w-full items-start gap-3 rounded-lg border-2 px-4 py-3 text-left text-sm transition-colors disabled:cursor-default',
+                    !chosen && !solved && 'hover:border-primary/50 hover:bg-accent/50',
+                    chosen && o.correct && 'border-emerald-500 bg-emerald-500/10',
+                    chosen && !o.correct && 'border-red-500 bg-red-500/10',
+                    solved && !chosen && 'opacity-60'
+                  )}
+                >
+                  {chosen ? o.correct ? <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none text-emerald-500" /> : <XCircle className="mt-0.5 h-4 w-4 flex-none text-red-500" /> : <span className="mt-0.5 h-4 w-4 flex-none rounded-full border" />}
+                  <span>{o.text}</span>
+                </button>
+                {chosen && (
+                  <p className="mt-1 pl-11 text-sm text-muted-foreground" aria-live="polite">
+                    <RichText md={o.feedback} />
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {!solved && picks.length > 0 && <p className="text-sm text-muted-foreground">Try another option.</p>}
+        {solved && (
+          <div className="rounded-lg border border-primary/40 bg-primary/[0.06] p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Teaching point</p>
+            <p className="mt-1 text-sm">
+              <RichText md={s.teaching} />
+            </p>
+            <div className="mt-3 flex justify-end">
+              <Button onClick={advance} autoFocus>
+                {stage + 1 < c.stages.length ? 'Continue' : 'Finish case'} <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
+}
 
-export default Cases;
+export default function Cases() {
+  const [active, setActive] = useState<ClinicalCase | null>(null);
+  const results = useProgressStore((s) => s.cases);
+
+  if (active) {
+    return (
+      <div className="mx-auto max-w-3xl">
+        <CasePlayer key={active.id} c={active} onExit={() => setActive(null)} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-6">
+      <header className="flex items-start gap-3">
+        <FileText className="mt-1 h-7 w-7 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Clinical cases</h1>
+          <p className="text-muted-foreground">Multi-step scenarios: each decision reveals what happens next. Wrong answers explain why — then let you try again.</p>
+        </div>
+      </header>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {CASES.map((c) => {
+          const mod = moduleBySlug(c.module);
+          const r = results[c.id];
+          const Icon = mod?.icon ?? FileText;
+          return (
+            <button key={c.id} type="button" onClick={() => setActive(c)} className="flex items-start gap-3 rounded-xl border bg-card p-4 text-left transition-shadow hover:shadow-md">
+              <div className={cn('flex h-10 w-10 flex-none items-center justify-center rounded-lg', mod ? moduleColor[mod.color].bg : 'bg-muted')}>
+                <Icon className={cn('h-5 w-5', mod ? moduleColor[mod.color].text : '')} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold">{c.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {mod?.short} · {c.setting} · {c.stages.length} steps
+                </p>
+                {r && (
+                  <p className="mt-1 inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                    <RotateCcw className="h-3 w-3" /> Last: {r.firstTryCorrect}/{r.total} first-try
+                  </p>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

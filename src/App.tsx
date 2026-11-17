@@ -1,57 +1,60 @@
-import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
-import { useThemeStore } from './store/useThemeStore';
-
-// Pages
+import { useThemeStore, resolveDark } from './store/useThemeStore';
+import { MODULES } from './content';
 import Home from './pages/Home';
-import Settings from './pages/Settings';
-import Glossary from './pages/Glossary';
-import NeonatalSepsis from './pages/NeonatalSepsis';
-import CHD from './pages/CHD';
-import Bronchiolitis from './pages/Bronchiolitis';
-import Croup from './pages/Croup';
-import ENT from './pages/ENT';
-import FTT from './pages/FTT';
-import Asthma from './pages/Asthma';
-import Fluids from './pages/Fluids';
-import Development from './pages/Development';
-import Cases from './pages/Cases';
-import Assessment from './pages/Assessment';
 
-function App() {
-  const isDarkMode = useThemeStore((state) => state.isDarkMode);
+const ModulePage = lazy(() => import('./pages/ModulePage'));
+const Assessment = lazy(() => import('./pages/Assessment'));
+const Cases = lazy(() => import('./pages/Cases'));
+const Glossary = lazy(() => import('./pages/Glossary'));
+const Settings = lazy(() => import('./pages/Settings'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/glossary" element={<Glossary />} />
-          <Route path="/neonatal-sepsis" element={<NeonatalSepsis />} />
-          <Route path="/chd" element={<CHD />} />
-          <Route path="/bronchiolitis" element={<Bronchiolitis />} />
-          <Route path="/croup" element={<Croup />} />
-          <Route path="/ent" element={<ENT />} />
-          <Route path="/ftt" element={<FTT />} />
-          <Route path="/asthma" element={<Asthma />} />
-          <Route path="/fluids" element={<Fluids />} />
-          <Route path="/development" element={<Development />} />
-          <Route path="/cases" element={<Cases />} />
-          <Route path="/assessment" element={<Assessment />} />
-        </Routes>
-      </Layout>
-    </Router>
-  );
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
 }
 
-export default App;
+function ThemeSync() {
+  const mode = useThemeStore((s) => s.mode);
+  useEffect(() => {
+    const apply = () => document.documentElement.classList.toggle('dark', resolveDark(mode));
+    apply();
+    if (mode !== 'system') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, [mode]);
+  return null;
+}
+
+const Fallback = () => <div className="h-64 animate-pulse rounded-xl bg-muted/50" aria-busy="true" />;
+
+export default function App() {
+  return (
+    <HashRouter>
+      <ThemeSync />
+      <ScrollToTop />
+      <Layout>
+        <Suspense fallback={<Fallback />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            {MODULES.map((m) => (
+              <Route key={m.slug} path={`/${m.slug}`} element={<ModulePage module={m} />} />
+            ))}
+            <Route path="/assessment" element={<Assessment />} />
+            <Route path="/cases" element={<Cases />} />
+            <Route path="/glossary" element={<Glossary />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </Layout>
+    </HashRouter>
+  );
+}
