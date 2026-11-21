@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -21,8 +21,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-      - run: npm install --no-save --package-lock=false playwright@1.56.1
-      - run: npx playwright install --with-deps chromium
+      - name: Prepare Chromium smoke tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/peds-smoke" --no-save --package-lock=false playwright@1.58.2
+          echo "PLAYWRIGHT_MODULE=$RUNNER_TEMP/peds-smoke/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          echo "CHROMIUM_PATH=$(command -v google-chrome)" >> "$GITHUB_ENV"
       - name: Test the built app in Chromium
         run: |
           npm run preview -- --host 127.0.0.1 --port 4173 --strictPort > /tmp/peds-preview.log 2>&1 &
@@ -40,17 +43,18 @@ jobs:
   production:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm install --no-save --package-lock=false playwright@1.56.1
-      - run: npx playwright install --with-deps chromium
+      - name: Prepare Chromium smoke tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/peds-smoke" --no-save --package-lock=false playwright@1.58.2
+          echo "PLAYWRIGHT_MODULE=$RUNNER_TEMP/peds-smoke/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          echo "CHROMIUM_PATH=$(command -v google-chrome)" >> "$GITHUB_ENV"
       - name: Verify the deployed calculator at the public Vercel URL
         env:
           CCHD_BASE_URL: https://peds-master.vercel.app/

@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
-import { chromium } from 'playwright';
+import { pathToFileURL } from 'node:url';
+
+const { chromium } = await import(process.env.PLAYWRIGHT_MODULE
+  ? pathToFileURL(process.env.PLAYWRIGHT_MODULE).href
+  : 'playwright');
 
 const base = new URL(process.env.CCHD_BASE_URL || 'http://127.0.0.1:4173');
 const attempts = Number(process.env.CCHD_DEPLOY_ATTEMPTS || 1);
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 
 async function check(run) {
   const context = await browser.newContext({
