@@ -23,7 +23,7 @@ export const chd: Module = {
     'ASD: **fixed split S2** + pulmonary flow murmur. VSD: **holosystolic LLSB** (small = loud). PDA: **continuous machinery** murmur, bounding pulses.',
     'Pathologic until proven otherwise: **diastolic**, holosystolic, grade ≥3/thrill, click, abnormal S2, louder on standing, or any symptoms.',
     'TOF = most common cyanotic CHD overall; **d-TGA** = most common cyanotic lesion presenting in the first days.',
-    'Pulse-ox screen (AAP 2020): **pass** if ≥95% in hand or foot with ≤3% difference; **fail** if <90%; otherwise **one** repeat.',
+    'Pulse-ox screen (AAP 2025): **pass** when both right hand and foot are ≥95% and the absolute difference is ≤3 percentage points. Either value <90% fails immediately. Otherwise repeat once after 1 hour; a repeat that does not pass fails.',
     'Endocarditis prophylaxis only for the highest-risk patients — **not** for isolated ASD, VSD, PDA, or bicuspid valve.',
   ],
   sections: [
@@ -161,9 +161,19 @@ export const chd: Module = {
       title: 'Pulse-oximetry screening for critical CHD',
       refs: ['cchd'],
       blocks: [
-        { type: 'text', md: 'Screen at **≥24 h** of age (or before early discharge), right hand + either foot. The 2020 AAP-endorsed algorithm reduced repeats from two to **one**, cutting time to diagnosis.' },
+        { type: 'text', md: 'Screen a well-appearing newborn in room air at **≥24 h** of age, or as late as possible before earlier discharge. Measure the **right hand and either foot**. Symptoms or concerning exam findings warrant diagnostic evaluation, not a screening wait.' },
+        {
+          type: 'table',
+          head: ['Result', 'What determines it'],
+          rows: [
+            ['**Pass**', 'Right hand and foot are both ≥95% and their absolute difference is ≤3 percentage points.'],
+            ['**Fail immediately**', 'Either site is <90% on either measurement. Begin evaluation; do not wait for a repeat.'],
+            ['**Repeat in 1 hour**', 'Otherwise, repeat both measurements once. If the repeat does not pass, the screen fails.'],
+          ],
+        },
         { type: 'tool', id: 'cchd-screen' },
-        { type: 'callout', tone: 'warn', title: 'Blind spot', md: 'Screening misses many **left-sided obstructive lesions (especially coarctation)** because lower-body saturation can be normal. Palpate femoral pulses and compare arm/leg BP.' },
+        { type: 'text', md: 'A failed screen identifies hypoxemia, not its cause. Evaluate promptly for cardiac and noncardiac causes such as lung disease, infection, or persistent pulmonary hypertension. Echocardiography is usually needed unless a reversible cause is identified and treated.' },
+        { type: 'callout', tone: 'warn', title: 'Blind spot', md: 'A pass does not exclude critical CHD. **Coarctation** can be missed when saturations are normal. Check femoral pulses; assess further when symptoms or exam findings are concerning.' },
       ],
     },
     {
@@ -276,10 +286,10 @@ export const chd: Module = {
     { myth: 'Every preterm PDA should be closed with ibuprofen early.', fact: 'BeNeDuctus (2023) and Baby-OSCAR (2024) found no benefit of early routine treatment.' },
   ],
   updates: [
+    { year: '2025', md: '**AAP critical CHD screening:** both sites must be ≥95% to pass, with ≤3 percentage points difference. One repeat is allowed after 1 hour for a borderline initial screen.' },
     { year: '2024', md: '**Baby-OSCAR** (NEJM): early selective ibuprofen for large PDA in <29-week infants did not reduce death or BPD.' },
     { year: '2023', md: '**BeNeDuctus** (NEJM): expectant PDA management non-inferior to early ibuprofen in <28-week infants.' },
     { year: '2021', md: '**AHA scientific statement** reaffirmed restricting IE prophylaxis to highest-risk cardiac conditions.' },
-    { year: '2020', md: '**Updated CCHD pulse-oximetry algorithm:** one repeat instead of two; pass requires ≥95% in hand or foot and ≤3% difference.' },
   ],
   questions: [
     {
@@ -300,10 +310,10 @@ export const chd: Module = {
     },
     {
       id: 'chd-3',
-      stem: 'Pulse oximetry at 26 h: right hand 97%, foot 93%. Interpretation (AAP 2020 algorithm)?',
+      stem: 'A well-appearing newborn in room air has an initial screen at 26 h: right hand 95%, foot 92%. What is the next step under the 2025 AAP algorithm?',
       options: ['Pass', 'Fail', 'Repeat in 1 hour', 'Repeat twice more over 2 hours'],
       answer: 2,
-      explanation: 'One value is ≥95% but the difference is 4% (>3%), so the screen is repeated once in 1 hour. A persistent result fails.',
+      explanation: 'An absolute difference of 3 percentage points is within the limit, but the foot is below 95%. Neither site is below 90%, so repeat both once in 1 hour. If the repeat does not meet both pass criteria, the screen fails.',
       ref: 'cchd',
     },
     {
@@ -378,6 +388,14 @@ export const chd: Module = {
       explanation: 'Both RCTs found no benefit from early routine pharmacologic closure in extremely preterm infants.',
       ref: 'beneductus',
     },
+    {
+      id: 'chd-13',
+      stem: 'An initial newborn critical CHD screen is 99% in the right hand and 95% in the foot. One hour later the readings are unchanged. What is the interpretation?',
+      options: ['Pass because both values are at least 95%', 'Fail and evaluate promptly for hypoxemia', 'Repeat again in 1 hour', 'Diagnose critical CHD from the screen alone'],
+      answer: 1,
+      explanation: 'Both sites reach 95%, but the absolute difference is 4 percentage points. Failure to meet pass criteria on the single repeat is a failed screen, not a diagnosis of critical CHD. Evaluate promptly for cardiac and noncardiac causes.',
+      ref: 'cchd',
+    },
   ],
   flashcards: [
     { id: 'chd-c1', front: 'Fixed split S2', back: 'ASD — constant RV volume load makes P2 late in both phases of respiration.' },
@@ -385,15 +403,16 @@ export const chd: Module = {
     { id: 'chd-c3', front: 'When do large VSDs cause heart failure?', back: '4–8 weeks, as pulmonary vascular resistance falls.' },
     { id: 'chd-c4', front: 'Shock + absent femoral pulses at 1–2 weeks', back: 'Ductal-dependent systemic lesion (coarctation, HLHS, interrupted arch) → PGE₁.' },
     { id: 'chd-c5', front: 'Key PGE₁ side effect', back: 'Apnea.' },
-    { id: 'chd-c6', front: 'CCHD screen pass criteria', back: '≥95% in right hand or foot AND ≤3% hand–foot difference.' },
+    { id: 'chd-c6', front: 'CCHD screen pass criteria', back: 'AAP 2025: ≥95% in both right hand and foot, with an absolute hand–foot difference of ≤3 percentage points.' },
     { id: 'chd-c7', front: 'Superior QRS axis', back: 'AVSD / primum ASD (Down syndrome).' },
     { id: 'chd-c8', front: 'Tet spell first step', back: 'Calm, knee-chest position, oxygen; then morphine, fluids, phenylephrine.' },
     { id: 'chd-c9', front: '22q11.2 deletion heart lesions', back: 'Conotruncal: TOF, truncus arteriosus, interrupted aortic arch type B.' },
     { id: 'chd-c10', front: 'Murmur louder on standing', back: 'Hypertrophic cardiomyopathy (or MVP click moves earlier) — never innocent.' },
+    { id: 'chd-c11', front: 'CCHD screen: what fails now, and when do you repeat?', back: 'Either reading <90% fails immediately. Other nonpassing initial results repeat once in 1 hour; a nonpassing repeat fails.' },
   ],
   references: [
     { id: 'park', citation: 'Park MK, Salamat M. Park’s Pediatric Cardiology for Practitioners, 7th ed. Elsevier, 2021.' },
-    { id: 'cchd', citation: 'Martin GR et al. Updated Strategies for Pulse Oximetry Screening for Critical Congenital Heart Disease. Pediatrics 2020;146:e20191650.', url: doi('10.1542/peds.2019-1650') },
+    { id: 'cchd', citation: 'Oster ME et al. Newborn Screening for Critical Congenital Heart Disease: A New Algorithm and Other Updated Recommendations. Pediatrics. 2025;155:e2024069667.', url: doi('10.1542/peds.2024-069667') },
     { id: 'aha-ie', citation: 'Wilson WR et al. Prevention of Viridans Group Streptococcal Infective Endocarditis: AHA Scientific Statement. Circulation 2021;143:e963–e978.', url: pm('Prevention of Viridans Group Streptococcal Infective Endocarditis scientific statement American Heart Association 2021') },
     { id: 'beneductus', citation: 'Hundscheid T et al. Expectant Management or Early Ibuprofen for Patent Ductus Arteriosus. N Engl J Med 2023;388:980–990.', url: pm('Hundscheid expectant management or early ibuprofen for patent ductus arteriosus') },
     { id: 'babyoscar', citation: 'Gupta S et al. Trial of Selective Early Treatment of Patent Ductus Arteriosus with Ibuprofen. N Engl J Med 2024;390:314–325.', url: pm('Trial of Selective Early Treatment of Patent Ductus Arteriosus with Ibuprofen') },

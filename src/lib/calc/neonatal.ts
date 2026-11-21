@@ -220,42 +220,54 @@ export function eosTriage(i: EosInput): Verdict {
   return { tone, title, points: pts, note: 'Adequate IAP = penicillin, ampicillin, or cefazolin ≥4 h before delivery. Clindamycin/vancomycin count as inadequate for neonatal risk assessment.' };
 }
 
-/* ---------------- Critical CHD pulse-oximetry screen (AAP 2020 algorithm) ---------------- */
+/* ---------------- Critical CHD pulse-oximetry screen (AAP 2025) ---------------- */
 
 export type CchdResult = 'pass' | 'repeat' | 'fail';
 
-export function cchdScreen(hand: number, foot: number, attempt: 1 | 2): { result: CchdResult; verdict: Verdict } {
-  const diff = Math.abs(hand - foot);
+function validSaturation(value: number | null): value is number {
+  return value !== null && Number.isFinite(value) && value >= 0 && value <= 100;
+}
+
+export function cchdScreen(hand: number | null, foot: number | null, attempt: 1 | 2): { result: CchdResult; verdict: Verdict } | null {
+  if (!validSaturation(hand) || !validSaturation(foot) || (attempt !== 1 && attempt !== 2)) return null;
+  const evaluation = 'Evaluate the newborn promptly for cardiac and noncardiac causes of hypoxemia. Echocardiography is usually needed unless a reversible cause is identified and treated.';
   if (hand < 90 || foot < 90) {
     return {
       result: 'fail',
       verdict: {
         tone: 'danger',
-        title: 'FAIL — SpO₂ <90% in either extremity',
-        points: ['Immediate evaluation for hypoxemia (infection, pulmonary causes, CCHD).', 'Echocardiogram if no other explanation; involve cardiology.'],
+        title: 'FAIL — SpO₂ <90% in either site',
+        points: ['Do not wait for a repeat screen.', evaluation],
       },
     };
   }
-  if ((hand >= 95 || foot >= 95) && diff <= 3) {
+
+  // Compare the upper value to the lower plus three to avoid a floating-point subtraction artifact.
+  const differenceTooLarge = Math.max(hand, foot) > Math.min(hand, foot) + 3;
+  if (hand >= 95 && foot >= 95 && !differenceTooLarge) {
     return {
       result: 'pass',
       verdict: {
         tone: 'success',
         title: 'PASS',
-        points: [`Highest value ≥95% and hand–foot difference ${diff}% (≤3%).`, 'A pass does not exclude all CHD — coarctation and other left-sided lesions are often missed.'],
+        points: ['Both readings are ≥95%, and the absolute difference is ≤3 percentage points.', 'A pass does not exclude critical CHD. Evaluate symptoms or abnormal exam findings regardless of the screen.'],
       },
     };
   }
+
+  const reasons: string[] = [];
+  if (hand < 95 && foot < 95) reasons.push('Both readings are below 95%.');
+  else if (hand < 95) reasons.push('The right hand is below 95%.');
+  else if (foot < 95) reasons.push('The foot is below 95%.');
+  if (differenceTooLarge) reasons.push('The absolute hand–foot difference is greater than 3 percentage points.');
+
   if (attempt === 1) {
     return {
       result: 'repeat',
       verdict: {
         tone: 'warn',
         title: 'REPEAT in 1 hour',
-        points: [
-          hand < 95 && foot < 95 ? 'Both readings 90–94%.' : `Hand–foot difference ${diff}% (>3%).`,
-          'The 2020 algorithm allows **one** repeat (previously two).',
-        ],
+        points: [...reasons, 'Repeat measurements of the right hand and either foot once, 1 hour after the initial screen.'],
       },
     };
   }
@@ -264,7 +276,7 @@ export function cchdScreen(hand: number, foot: number, attempt: 1 | 2): { result
     verdict: {
       tone: 'danger',
       title: 'FAIL on repeat screen',
-      points: ['Comprehensive evaluation for causes of hypoxemia; echocardiogram if no other explanation.'],
+      points: [...reasons, 'Do not repeat routinely a second time.', evaluation],
     },
   };
 }

@@ -12,7 +12,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   { term: 'Bacterial tracheitis', definition: 'Bacterial (usually S. aureus) infection of the trachea after viral croup: toxic, high fever, purulent secretions, poor response to epinephrine.', module: 'croup' },
   { term: 'Bronchiolitis', definition: 'Viral lower-respiratory infection of the small airways in children <2 years; clinical diagnosis; supportive treatment.', module: 'bronchiolitis' },
   { term: 'Catch-up growth energy', definition: 'kcal/kg/day = RDA kcal/kg for weight-age × median weight-for-length ÷ actual weight.', module: 'ftt' },
-  { term: 'CCHD screening', definition: 'Pulse oximetry of right hand and a foot at ≥24 h; pass if ≥95% in either with ≤3% difference; fail if <90%; one repeat otherwise (AAP 2020).', module: 'chd' },
+  { term: 'CCHD screening', definition: 'AAP 2025: measure the right hand and either foot at ≥24 h or before earlier discharge. Pass if both are ≥95% and the absolute difference is ≤3 percentage points. Either site <90% fails immediately; otherwise repeat once in 1 hour, and fail if the repeat does not pass.', module: 'chd' },
   { term: 'Clesrovimab', definition: 'Long-acting RSV monoclonal antibody (Enflonsia), 105 mg IM once for infants <8 months in their first season, any weight.', module: 'bronchiolitis' },
   { term: 'Clinical Dehydration Scale (CDS)', definition: '4 items (appearance, eyes, mucous membranes, tears), 0–2 each: 0 none, 1–4 some, 5–8 moderate–severe dehydration.', module: 'fluids' },
   { term: 'Compensated shock', definition: 'Inadequate perfusion (tachycardia, delayed capillary refill, cool extremities) with normal blood pressure.', module: 'foundations' },
