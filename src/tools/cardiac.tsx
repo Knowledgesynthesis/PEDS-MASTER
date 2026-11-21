@@ -6,30 +6,41 @@ import { cchdScreen, qpQs, interpretQpQs } from '@/lib/calc/neonatal';
 import { CaseSorter, type SorterCase } from './shared';
 
 export function CchdTool() {
-  const [hand, setHand] = useState('');
-  const [foot, setFoot] = useState('');
   const [attempt, setAttempt] = useState<1 | 2>(1);
-  const h = num(hand);
-  const f = num(foot);
-  const ok = h !== null && f !== null && h >= 50 && h <= 100 && f >= 50 && f <= 100;
-  const r = ok ? cchdScreen(h!, f!, attempt) : null;
+  const [initial, setInitial] = useState({ hand: '', foot: '' });
+  const [repeat, setRepeat] = useState({ hand: '', foot: '' });
+  const readings = attempt === 1 ? initial : repeat;
+  const setReadings = attempt === 1 ? setInitial : setRepeat;
+  const h = num(readings.hand);
+  const f = num(readings.foot);
+  const result = cchdScreen(h, f, attempt);
+  const invalid = ([readings.hand, readings.foot] as const).some((value) => {
+    if (value.trim() === '') return false;
+    const parsed = num(value);
+    return parsed === null || parsed < 0 || parsed > 100;
+  });
   return (
     <ToolFrame
       title="Critical CHD pulse-oximetry screen"
-      subtitle="Right hand (pre-ductal) + either foot (post-ductal), at ≥24 h of age"
-      source="Martin GR et al. Updated Strategies for Pulse Oximetry Screening for Critical Congenital Heart Disease. Pediatrics 2020;146:e20191650"
+      subtitle="Routine newborn screening in room air: right hand and either foot at ≥24 h, or as late as possible before earlier discharge."
+      source="Oster ME et al. AAP clinical report. Pediatrics. 2025;155:e2024069667."
     >
       <div className="grid gap-4 sm:grid-cols-3">
-        <NumberField label="Right hand SpO₂" value={hand} onChange={setHand} unit="%" />
-        <NumberField label="Foot SpO₂" value={foot} onChange={setFoot} unit="%" />
+        <NumberField label="Right hand SpO₂" value={readings.hand} onChange={(hand) => setReadings((pair) => ({ ...pair, hand }))} min={0} max={100} unit="%" />
+        <NumberField label="Foot SpO₂" value={readings.foot} onChange={(foot) => setReadings((pair) => ({ ...pair, foot }))} min={0} max={100} unit="%" />
         <Choice label="Screen" value={attempt} onChange={setAttempt} options={[{ value: 1, label: 'Initial' }, { value: 2, label: 'Repeat' }]} />
       </div>
-      <Result verdict={r?.verdict ?? null} empty="Enter both saturations (50–100%)." />
-      {r?.result === 'repeat' && attempt === 1 && (
-        <Button size="sm" variant="outline" onClick={() => setAttempt(2)}>
+      <Result verdict={result?.verdict ?? null} empty={invalid
+        ? 'Invalid reading. Enter oxygen saturations from 0% to 100%. No result.'
+        : 'Enter both saturations (0% to 100%) to see the result.'} />
+      {result?.result === 'repeat' && (
+        <Button size="sm" variant="outline" onClick={() => { setRepeat({ hand: '', foot: '' }); setAttempt(2); }}>
           Enter repeat values
         </Button>
       )}
+      <div className="text-sm">
+        <a href="https://doi.org/10.1542/peds.2024-069667" target="_blank" rel="noreferrer" className="text-primary underline underline-offset-2">Read the 2025 AAP screening algorithm</a>
+      </div>
     </ToolFrame>
   );
 }

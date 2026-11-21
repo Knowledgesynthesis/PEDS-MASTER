@@ -114,15 +114,35 @@ describe('bronchiolitis disposition', () => {
 });
 
 describe('neonatal', () => {
-  it('CCHD screen (AAP 2020)', () => {
-    expect(cchdScreen(97, 93, 1).result).toBe('repeat');
-    expect(cchdScreen(97, 93, 2).result).toBe('fail');
-    expect(cchdScreen(96, 95, 1).result).toBe('pass');
-    expect(cchdScreen(95, 92, 1).result).toBe('pass'); // diff exactly 3
-    expect(cchdScreen(94, 98, 1).result).toBe('repeat');
-    expect(cchdScreen(94, 94, 1).result).toBe('repeat');
-    expect(cchdScreen(89, 99, 1).result).toBe('fail');
-    expect(cchdScreen(99, 89, 2).result).toBe('fail');
+  it('CCHD screen: both readings ≥95% and difference ≤3 on either attempt (AAP 2025)', () => {
+    for (const attempt of [1, 2] as const) {
+      for (const [hand, foot] of [[95, 95], [98, 95], [95, 98], [100, 100], [95.1, 98.1]]) {
+        expect(cchdScreen(hand, foot, attempt)?.result).toBe('pass');
+      }
+    }
+  });
+  it('CCHD screen: either reading <90 is an immediate fail on either attempt', () => {
+    for (const attempt of [1, 2] as const) {
+      for (const [hand, foot] of [[89, 99], [99, 89], [0, 100], [95, 89.9]]) {
+        expect(cchdScreen(hand, foot, attempt)?.verdict.title).toMatch(/<90%/);
+      }
+    }
+  });
+  it('CCHD screen: intermediate results repeat once, then fail if still not passing', () => {
+    for (const [hand, foot] of [[95, 92], [92, 95], [95, 94], [94, 95], [94, 94], [90, 90], [97, 93], [99, 95], [95, 99], [95, 98.01]]) {
+      expect(cchdScreen(hand, foot, 1)?.result, `${hand}/${foot}`).toBe('repeat');
+      expect(cchdScreen(hand, foot, 2)?.result, `${hand}/${foot}`).toBe('fail');
+    }
+    expect(cchdScreen(95, 94, 1)?.verdict.points).toContain('The foot is below 95%.');
+    expect(cchdScreen(94, 95, 2)?.verdict.points).toContain('The right hand is below 95%.');
+    expect(cchdScreen(99, 95, 2)?.verdict.points).toContain('The absolute hand–foot difference is greater than 3 percentage points.');
+  });
+  it('CCHD screen: invalid or missing saturations have no verdict', () => {
+    for (const value of [null, NaN, Infinity, -Infinity, -1, 100.1]) {
+      expect(cchdScreen(value, 89, 1)).toBeNull();
+      expect(cchdScreen(99, value, 2)).toBeNull();
+    }
+    expect(cchdScreen(95, 95, 3 as 2)).toBeNull();
   });
   it('Qp:Qs', () => {
     expect(qpQs(97, 72, 99, 86)).toBeCloseTo(25 / 13, 5);

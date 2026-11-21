@@ -10,7 +10,7 @@ Content reviewed **November 2026**. Each recommendation links to the guideline o
 |---|--------|----------------|
 | 0 | Foundations: the sick child (PAT, vitals, shock, weight) | Vital-sign checker |
 | 1 | Neonatal sepsis & the febrile young infant | EOS triage (AAP 2018/2019), febrile infant 8–60 d pathway (AAP 2021) |
-| 2 | Congenital heart disease | CCHD pulse-ox screen (2020 algorithm), Qp:Qs calculator, murmur mapper |
+| 2 | Congenital heart disease | CCHD pulse-ox screen (AAP 2025 algorithm), Qp:Qs calculator, murmur mapper |
 | 3 | Bronchiolitis & RSV prevention | Home/admit/escalate helper, "what helps?" evidence sorter |
 | 4 | Stridor: croup, epiglottitis & look-alikes | Westley score, stridor sorter |
 | 5 | Otitis media & sore throat | AOM diagnose-and-treat (AAP 2013), McIsaac + IDSA 2025 testing |
@@ -19,7 +19,7 @@ Content reviewed **November 2026**. Each recommendation links to the guideline o
 | 8 | Dehydration, gastroenteritis & IV fluids | Clinical Dehydration Scale, maintenance (isotonic), ORT/deficit/sodium planner, evidence sorter |
 | 9 | Development, delay & autism | CDC 2022 milestone checker, M-CHAT-R/F |
 
-Every module has: bottom line · objectives · "what changed" · sections with tables and tools · myth-vs-evidence pitfalls · 8–12 MCQs with explanations · flashcards · numbered sources.
+Every module has: bottom line · objectives · "what changed" · sections with tables and tools · myth-vs-evidence pitfalls · 8+ MCQs with explanations · flashcards · numbered sources.
 
 Across the app: **exam builder** (mix modules; tutor or exam mode; target unseen or missed questions), **11 branching cases**, **59-term glossary**, **global search** (Ctrl/⌘ K or `/`), progress with Leitner spaced repetition, light/dark/system theme, and full **offline** use after first load.
 
@@ -51,7 +51,7 @@ v1 contained errors that are now fixed and guarded by tests:
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 49 unit + content-integrity tests (Vitest)
+npm test           # Unit + content-integrity tests (Vitest)
 npm run lint
 npm run build      # type-check + production build to dist/
 npm run check      # all of the above
